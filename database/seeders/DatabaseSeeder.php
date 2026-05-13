@@ -2,8 +2,10 @@
 
 namespace Database\Seeders;
 
+use App\Models\Team;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Database\Factories\ClientFactory;
+use App\Models\Client;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,9 +17,18 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        $team = Team::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'My First Business',
+        ]);
+
+        $user->update(['current_team_id' => $team->id]);
+
+        Client::factory(10)->create(['team_id' => $team->id]);
     }
 }

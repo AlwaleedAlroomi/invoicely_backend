@@ -35,33 +35,34 @@ class UserFactory extends Factory
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
+            'current_team_id' => null,
         ];
     }
 
     /**
      * Configure the model factory.
      */
-    public function configure(): static
-    {
-        return $this->afterCreating(function ($user) {
-            $team = Team::factory()->personal()->create([
-                'name' => $user->name."'s Team",
-            ]);
+    // public function configure(): static
+    // {
+    //     return $this->afterCreating(function ($user) {
+    //         $team = Team::factory()->personal()->create([
+    //             'name' => $user->name . "'s Team",
+    //         ]);
 
-            $team->members()->attach($user, [
-                'role' => TeamRole::Owner->value,
-            ]);
+    //         $team->members()->attach($user, [
+    //             'role' => TeamRole::Owner->value,
+    //         ]);
 
-            $user->switchTeam($team);
-        });
-    }
+    //         $user->switchTeam($team);
+    //     });
+    // }
 
     /**
      * Indicate that the model's email address should be unverified.
      */
     public function unverified(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'email_verified_at' => null,
         ]);
     }
@@ -71,7 +72,7 @@ class UserFactory extends Factory
      */
     public function withTwoFactor(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'two_factor_secret' => encrypt('secret'),
             'two_factor_recovery_codes' => encrypt(json_encode(['recovery-code-1'])),
             'two_factor_confirmed_at' => now(),

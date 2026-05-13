@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Team;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -24,6 +25,7 @@ class TeamFactory extends Factory
             'name' => $name,
             'slug' => Str::slug($name),
             'is_personal' => false,
+            'user_id' => User::factory(),
         ];
     }
 
@@ -32,7 +34,7 @@ class TeamFactory extends Factory
      */
     public function personal(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'is_personal' => true,
         ]);
     }
@@ -42,7 +44,7 @@ class TeamFactory extends Factory
      */
     public function trashed(): static
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'deleted_at' => now(),
         ]);
     }
