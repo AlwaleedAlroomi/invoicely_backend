@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('currency')->default('USD');
             $table->text('notes')->nullable();
             $table->boolean('is_active')->default(true);
-
+            $table->softDeletes();
             $table->timestamps();
         });
     }
