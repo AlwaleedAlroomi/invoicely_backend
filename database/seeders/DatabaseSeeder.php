@@ -4,8 +4,8 @@ namespace Database\Seeders;
 
 use App\Models\Team;
 use App\Models\User;
-use Database\Factories\ClientFactory;
 use App\Models\Client;
+use App\Models\InvoiceNumberSequence;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -30,5 +30,10 @@ class DatabaseSeeder extends Seeder
         $user->update(['current_team_id' => $team->id]);
 
         Client::factory(10)->create(['team_id' => $team->id]);
+        InvoiceNumberSequence::firstOrCreate(['team_id' => $team->id], [
+            'prefix' => 'INV-' . date('Y') . '-',
+            'next_number' => 1,
+            'digits_length' => 5,
+        ]);
     }
 }
