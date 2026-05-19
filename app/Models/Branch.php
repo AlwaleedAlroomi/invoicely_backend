@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Branch extends Model
 {
-    /** @use HasFactory<\Database\Factories\BrancheFactory> */
+    /** @use HasFactory<\Database\Factories\BranchFactory> */
     use HasFactory, SoftDeletes, BelongsToTeam;
 
     protected $fillable = [
@@ -33,7 +33,7 @@ class Branch extends Model
 
     public function team(): BelongsTo
     {
-        require $this->belongsTo(Team::class);
+        return $this->belongsTo(Team::class);
     }
 
     public function items(): HasMany
