@@ -13,7 +13,16 @@ return new class extends Migration
     {
         Schema::create('invoice_items', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('invoice_id')->constrained('invoices')->cascadeOnDelete();
+            $table->foreignId('item_id')->nullable()->constrained('items')->nullOnDelete();
+            $table->uuid('remote_id')->nullable()->unique();
+            $table->decimal('quantity', 12, 4)->default(1.0000);
+            $table->decimal('unit_price', 15, 4)->default(0.0000);
+            $table->decimal('tax_rate', 5, 2)->default(0.00);
+            $table->decimal('tax_total', 15, 4)->default(0.0000);
+            $table->decimal('discount_total', 15, 4)->default(0.0000);
+            $table->decimal('sub_total', 15, 4)->default(0.0000);
+            $table->$table->timestamps();
         });
     }
 

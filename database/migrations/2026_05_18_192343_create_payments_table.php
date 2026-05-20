@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('team_id')->constrained('teams')->cascadeOnDelete();
+            $table->foreignId('invoice_id')->constrained('invoices')->cascadeOnDelete();
+            $table->uuid('remote_id')->nullable()->unique();
+            $table->date('payment_date');
+            $table->decimal('payment_amount', 15, 4);
+            $table->string('payment_method');
+            $table->string('reference_number')->nullable()->index();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
