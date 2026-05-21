@@ -23,8 +23,8 @@ class BranchFactory extends Factory
         return [
             'team_id' => Team::factory(),
             'remote_id' => Str::uuid(),
-            'name' => fake()->name(),
-            'code' => fake()->unique(),
+            'name' => fake()->name() . ' Branch',
+            'code' => 'BR-' . fake()->unique()->numberBetween(100, 999),
             'address' => fake()->streetAddress(),
             'phone' => fake()->phoneNumber(),
             'is_active' => true,

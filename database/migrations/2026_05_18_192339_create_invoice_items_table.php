@@ -22,7 +22,7 @@ return new class extends Migration
             $table->decimal('tax_total', 15, 4)->default(0.0000);
             $table->decimal('discount_total', 15, 4)->default(0.0000);
             $table->decimal('sub_total', 15, 4)->default(0.0000);
-            $table->$table->timestamps();
+            $table->timestamps();
         });
     }
 
