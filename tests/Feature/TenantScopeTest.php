@@ -31,6 +31,8 @@ class TenantScopeTest extends TestCase
 
         $this->assertEquals('Branch A', $retrievedBranches->first()->name);
 
-        $this->assertFalse($retrievedBranches->contains($branchOfTeamB, value: 2));
+        foreach ($retrievedBranches as $branch) {
+            $this->assertNotEquals($teamB->id, $branch->team_id, '🔒 Security Breach! A user from Team A was able to retrieve and view data belonging to Team B.');
+        }
     }
 }

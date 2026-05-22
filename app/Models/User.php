@@ -15,12 +15,12 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password', 'current_team_id'])]
+#[Fillable(['name', 'email', 'password', 'current_team_id', 'branch_id'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, HasTeams, Notifiable, TwoFactorAuthenticatable, HasApiTokens, BelongsToTeam;
+    use HasFactory, HasTeams, Notifiable, TwoFactorAuthenticatable, HasApiTokens;
 
     /**
      * Get the attributes that should be cast.
@@ -56,5 +56,10 @@ class User extends Authenticatable
     public function currentTeam()
     {
         return $this->belongsTo(Team::class, 'current_team_id');
+    }
+
+    public function currentBranch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id');
     }
 }

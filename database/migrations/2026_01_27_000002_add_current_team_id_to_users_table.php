@@ -17,6 +17,7 @@ return new class extends Migration
                 ->after('password')
                 ->constrained('teams')
                 ->nullOnDelete();
+            $table->foreignId('branch_id')->nullable()->after('current_team_id')->constrained('branches')->nullOnDelete();
         });
     }
 
@@ -27,6 +28,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropConstrainedForeignId('current_team_id');
+            $table->dropConstrainedForeignId('branch_id');
         });
     }
 };
