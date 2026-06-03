@@ -19,6 +19,8 @@ class AuthResource extends JsonResource
             'user' => new UserResource($this->user),
             'access_token' => $this->token,
             'token_type' => $this->token_type ?? 'Bearer',
+            'must_change_password' => (bool) $this->user->must_change_password,
+            'is_temporary_token'   => (bool) $this->is_temporary,
         ];
     }
 }

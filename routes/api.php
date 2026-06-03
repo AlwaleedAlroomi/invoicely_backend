@@ -10,4 +10,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
+    Route::post('/auth/reset-initial-password', [AuthController::class, 'resetInitialPassword'])
+        ->middleware('throttle:login_api');
 });

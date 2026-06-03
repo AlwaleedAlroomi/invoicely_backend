@@ -41,21 +41,77 @@ class AuthController extends BaseController
 
     public function login(LoginUserRequest $request)
     {
-        $validated = $request->validated();
+        $credentials = $request->validated();
 
-        $user = User::where('email', $validated['email'])->first();
-
-        if (!$user || !Hash::check($validated['password'], $user->password)) {
-            return $this->sendError('Invalid credentials', code: 401);
+        if (!auth()->attempt($credentials)) {
+            return $this->sendError('Invalid credentials.', [], 401);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $user = auth()->user();
 
-        $authData = ['user' => $user, 'token' => $token, 'token_type' => 'Bearer'];
+        if (!$user->is_active) {
+            return $this->sendError('Your account is deactivated.', [], 403);
+        }
 
-        $transformedData = new AuthResource((object) $authData);
+        // 3. Must change password login
+        if ($user->must_change_password) {
+            $token = $user->createToken('temporary_auth_token', ['force-password-change'])->plainTextToken;
 
-        return $this->sendResponse($transformedData, 'Successfully login', 201);
+            $authData = [
+                'user'         => $user,
+                'token'        => $token,
+                'token_type'   => 'Bearer',
+                'is_temporary' => true
+            ];
+
+            return $this->sendResponse(
+                new AuthResource((object) $authData),
+                'Temporary login successful. You must change your password.',
+                200,
+            );
+        }
+
+        // 4. Normal login
+        $token = $user->createToken('auth_token', ['*'])->plainTextToken;
+
+        $authData = [
+            'user'         => $user,
+            'token'        => $token,
+            'token_type'   => 'Bearer',
+            'is_temporary' => false
+        ];
+
+        return $this->sendResponse(
+            new AuthResource((object) $authData),
+            'Successfully login',
+            200,
+        );
+    }
+
+    public function resetInitialPassword(Request $request)
+    {
+        $user = auth()->user();
+
+        if (!$user->tokenCan('force-password-change')) {
+            return $this->sendError('Unauthorized action.', [], 403);
+        }
+
+        $validated = $request->validate([
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+            'must_change_password' => false,
+        ]);
+
+        $user->tokens()->delete();
+        $newToken = $user->createToken('auth_token', ['*'])->plainTextToken;
+
+        return $this->sendResponse([
+            'token' => $newToken,
+            'user' => new UserResource($user)
+        ], 'Password updated successfully. Full access granted.');
     }
 
     public function logout(Request $request)
