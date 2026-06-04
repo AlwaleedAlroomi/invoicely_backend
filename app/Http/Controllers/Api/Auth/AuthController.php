@@ -49,9 +49,9 @@ class AuthController extends BaseController
 
         $user = auth()->user();
 
-        if (!$user->is_active) {
-            return $this->sendError('Your account is deactivated.', [], 403);
-        }
+        // if (!$user->is_active) {
+        //     return $this->sendError('Your account is deactivated.', [], 403);
+        // }
 
         // 3. Must change password login
         if ($user->must_change_password) {

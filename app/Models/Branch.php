@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasHashids;
 use App\Traits\ScopedResource;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Branch extends Model
 {
     /** @use HasFactory<\Database\Factories\BranchFactory> */
-    use HasFactory, SoftDeletes, ScopedResource;
+    use HasFactory, SoftDeletes, ScopedResource, HasHashids;
 
     protected $fillable = [
         'team_id',
