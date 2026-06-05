@@ -8,6 +8,7 @@ use App\Http\Resources\USer\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Vinkla\Hashids\Facades\Hashids;
 
 class EmployeeController extends BaseController
 {
@@ -61,8 +62,34 @@ class EmployeeController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $hashedId)
     {
-        //
+        $decoded = Hashids::decode($hashedId);
+        if (empty($decoded)) {
+            return $this->sendError('Invalid employee identifier.', [], 422);
+        }
+
+        $employeeId = $decoded[0];
+
+        $employee = User::find($employeeId, 'id');
+
+        if (!$employee) {
+            return $this->sendError('Employee not found or unauthorized.', [], 404);
+        }
+
+        if ($employee->id == auth()->id()) {
+            return $this->sendError('Security Action: You cannot deactivate your own account.', [], 403);
+        }
+
+        $employee->update([
+            'is_active' => false,
+        ]);
+
+        $employee->tokens()->delete();
+
+        return $this->sendResponse(
+            new UserResource($employee),
+            'Employee account has been deactivated successfully and all active sessions were terminated.'
+        );
     }
 }
