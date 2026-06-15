@@ -29,25 +29,38 @@ class StoreUserRequest extends FormRequest
             'password'  => ['required', 'string', 'min:8'],
             // Stop HR or others from choosing a role not real
             'role'      => ['required', 'string', 'in:owner,branch_manager,cashier'],
-            'branch_id' => ['nullable', 'string'],
+            'branch_id' => ['nullable', 'string', 'exists:branches,id'],
         ];
     }
 
     protected function prepareForValidation()
     {
-        if ($this->filled('branch_id')) {
-            $decode = Hashids::decode($this->branch_id);
+        $fields = ['client_id', 'branch_id', 'team_id'];
+        $decode = [];
 
-            if (!empty($decode)) {
-                $this->merge([
-                    'branch_id'=>$decode[0],
-                ]);
-            } else{
-                $this->merge([
-                    'branch_id'=>'invalid_hashid',
-                ]);
+        foreach ($fields as $field) {
+            if (filled($field)) {
+                $result = Hashids::decode($this->input($field));
+
+                $decode[$field] = $result[0] ?? null;
             }
         }
+
+        $this->merge($decode);
+
+        // if ($this->filled('branch_id')) {
+        //     $decode = Hashids::decode($this->branch_id);
+
+        //     if (!empty($decode)) {
+        //         $this->merge([
+        //             'branch_id' => $decode[0],
+        //         ]);
+        //     } else {
+        //         $this->merge([
+        //             'branch_id' => 'invalid_hashid',
+        //         ]);
+        //     }
+        // }
     }
 
     public function messages()

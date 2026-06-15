@@ -17,5 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // api/admin
     Route::prefix('admin')->group(function () {
         Route::post('/employees', [EmployeeController::class, 'store']);
+        Route::get('/employees/{user}', [EmployeeController::class, 'show']);
+        Route::delete('/employees/{employee}', [EmployeeController::class, 'destroy']);
     });
 });

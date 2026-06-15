@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\Admin;
 
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\Admin\StoreUserRequest;
-use App\Http\Resources\USer\UserResource;
+use App\Http\Resources\User\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -46,9 +46,10 @@ class EmployeeController extends BaseController
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        $user = User::findOrFail($user->id);
+        return $this->sendResponse(new UserResource($user), 'Employee found successfully by Admin.', 201);
     }
 
     /**
@@ -62,28 +63,27 @@ class EmployeeController extends BaseController
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $hashedId)
+    public function destroy(User $employee)
     {
-        $decoded = Hashids::decode($hashedId);
-        if (empty($decoded)) {
-            return $this->sendError('Invalid employee identifier.', [], 422);
-        }
+        // $decoded = Hashids::decode($employee);
+        // if (empty($decoded)) {
+        //     return $this->sendError('Invalid employee identifier.', [], 422);
+        // }
 
-        $employeeId = $decoded[0];
-
-        $employee = User::find($employeeId, 'id');
+        // $employeeId = $decoded[0];
 
         if (!$employee) {
             return $this->sendError('Employee not found or unauthorized.', [], 404);
         }
 
-        if ($employee->id == auth()->id()) {
-            return $this->sendError('Security Action: You cannot deactivate your own account.', [], 403);
-        }
+        // if ($employee->id == auth()->id()) {
+        //     return $this->sendError('Security Action: You cannot deactivate your own account.', [], 403);
+        // }
 
         $employee->update([
             'is_active' => false,
         ]);
+
 
         $employee->tokens()->delete();
 
