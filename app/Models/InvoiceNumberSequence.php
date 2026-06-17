@@ -42,12 +42,12 @@ class InvoiceNumberSequence extends Model
                     [
                         'prefix' => 'INV-' . date('Y') . '-',
                         'next_number' => 1,
-                        'digit_length' => 5
+                        'digits_length' => 5
                     ]
                 );
             $formattedNumber = str_pad(
                 (string) $sequence->next_number,
-                $sequence->digit_length,
+                $sequence->digits_length,
                 0,
                 STR_PAD_LEFT
             );

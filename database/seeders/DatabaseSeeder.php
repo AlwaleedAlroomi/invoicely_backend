@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Actions\Teams\CreateTeam;
 use App\Models\Branch;
 use App\Models\Team;
 use App\Models\User;
@@ -22,10 +23,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $team = Team::factory()->create([
-            'user_id' => $user->id,
-            'name' => 'My First Business',
-        ]);
+        $team = (new CreateTeam)->handle($user, 'My First Business');
 
         $user->update(['current_team_id' => $team->id]);
 

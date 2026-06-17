@@ -18,6 +18,7 @@ class CreateTeam
             $team = Team::create([
                 'name' => $name,
                 'is_personal' => $isPersonal,
+                'user_id' => $user->id,
             ]);
 
             $membership = $team->memberships()->create([

@@ -49,15 +49,15 @@ class User extends Authenticatable
             ->implode('');
     }
 
-    public function teams()
-    {
-        return $this->belongsToMany(Team::class)->withPivot('role');
-    }
+    // public function teams()
+    // {
+    //     return $this->belongsToMany(Team::class)->withPivot('role');
+    // }
 
-    public function currentTeam()
-    {
-        return $this->belongsTo(Team::class, 'current_team_id');
-    }
+    // public function currentTeam()
+    // {
+    //     return $this->belongsTo(Team::class, 'current_team_id');
+    // }
 
     public function currentBranch()
     {

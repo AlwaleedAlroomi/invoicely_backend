@@ -4,9 +4,9 @@ namespace App\Traits;
 
 use Illuminate\Database\Eloquent\Builder;
 
-
 trait BelongsToTeam
 {
+    private static ?int $consoleTeamId = null;
     /**
      * يتم استدعاء هذه الدالة تلقائياً عند تشغيل الموديل.
      */
@@ -16,7 +16,7 @@ trait BelongsToTeam
         static::addGlobalScope('team_scope', function (Builder $builder) {
             if (auth()->check()) {
                 // نفترض هنا أننا نخزن الـ team_id النشط في الـ session أو نجلب من التوكن
-                $teamId = auth()->user()->current_team_id;
+                $teamId = self::resolveCurrentTeamId();
 
                 if ($teamId) {
                     $builder->where('team_id', $teamId);
@@ -26,9 +26,30 @@ trait BelongsToTeam
 
         // تعيين team_id تلقائياً عند إنشاء سجل جديد
         static::creating(function ($model) {
-            if (auth()->check() && ! $model->team_id) {
-                $model->team_id = auth()->user()->current_team_id;
+            $teamId = self::resolveCurrentTeamId();
+            if ($teamId && ! $model->team_id) {
+                $model->team_id = $teamId;
             }
         });
+    }
+
+
+
+    public static function setConsoleTeamId(?int $teamId): void
+    {
+        self::$consoleTeamId = $teamId;
+    }
+
+    public static function resolveCurrentTeamId(): ?int
+    {
+        if (app()->runningInConsole()) {
+            return self::$consoleTeamId;
+        }
+
+        if (auth()->check()) {
+            return auth()->user()->current_team_id;
+        }
+
+        return null;
     }
 }
